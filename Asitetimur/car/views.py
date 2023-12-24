@@ -16,6 +16,7 @@ Under the hood, it boasts a twin-turbocharged 4.4-liter V8 engine that produces 
      'is_published': True},
     {'id': 2, 'title': 'AUDI', 'content': 'bio', 'is_published': False},
     {'id': 3, 'title': 'PORSCHE', 'content': 'bio', 'is_published': True},
+    {'id': 4, 'title': 'FERRARI', 'content': 'bio', 'is_published': True},
 ]
 
 cats_db = [
