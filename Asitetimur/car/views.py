@@ -1,8 +1,9 @@
 from django.http import HttpResponse, HttpResponseNotFound
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.template.loader import render_to_string
 
+from car.models import Car, Category
 
 menu = [{'title': 'about site', 'url_name': 'about'},
         {'title': 'add article', 'url_name': 'add_page'},
@@ -19,18 +20,13 @@ Under the hood, it boasts a twin-turbocharged 4.4-liter V8 engine that produces 
     {'id': 4, 'title': 'FERRARI', 'content': 'bio', 'is_published': True},
 ]
 
-cats_db = [
-    {'id': 1, "name": 'Cars'},
-    {'id': 2, "name": "Models"},
-    {'id': 3, "name": "Additional_models"},
-]
-
-
 def index(request):
+    posts = Car.published.all()
+
     data = {
         'title' : 'main page',
         'menu' : menu,
-        'posts': data_db,
+        'posts': posts,
         'cat_selected': 0,
     }
 
@@ -43,8 +39,17 @@ def about(request):
     data = {'title': 'about site', 'menu': menu}
     return render(request, 'car/about.html', data)
 
-def show_post(request, post_id):
-    return HttpResponse(f"reflection of state with id = {post_id}")
+def show_post(request, post_slug):
+    post = get_object_or_404(Car, slug=post_slug)
+
+    data = {
+        'title': post.title,
+        'menu': menu,
+        'post': post,
+        'cat_selected': 1,
+    }
+
+    return render(request, 'car/post.html', data)
 
 
 def archive(request, year):
@@ -63,12 +68,14 @@ def contact(request):
 def login(request):
     return HttpResponse("login")
 
-def show_category(request, cat_id):
+def show_category(request, cat_slug):
+    category = get_object_or_404(Category, slug=cat_slug)
+    posts = Car.published.filter(cat_id=category.pk)
     data = {
-        'title': 'main page',
+        'title': f'heading : {category.name}',
         'menu': menu,
-        'posts': data_db,
-        'cat_selected': cat_id,
+        'posts': posts,
+        'cat_selected': category.pk,
     }
     return render(request, 'car/index.html', context=data)
 def page_not_found(request, exception):
